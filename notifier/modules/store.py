@@ -1,6 +1,7 @@
 from abc import ABC
 import requests
 from bs4 import BeautifulSoup
+from random_proxies import random_proxy
 from modules.product_status import Status
 
 class Store(ABC):
@@ -12,9 +13,9 @@ class Store(ABC):
         self.url = url
         self.should_notify = True
 
-    def check(self, user_agent):
+    def check(self, user_agent, proxy_country_code):
         try:
-            self.get_page_data(user_agent)
+            self.get_page_data(user_agent, proxy_country_code)
             if not self.is_page_valid():
                 return Status.FAIL
             in_stock = self.is_in_stock()
@@ -41,9 +42,10 @@ class Store(ABC):
     def get_url(self):
         return self.url
 
-    def get_page_data(self, user_agent):
+    def get_page_data(self, user_agent, proxy_country_code):
+        proxy = random_proxy(code=proxy_country_code)
         headers = {'User-Agent': user_agent}
-        response = requests.get(self.url, headers = headers, timeout=5)
+        response = requests.get(self.url, headers = headers, timeout=5, proxies={"http":"http://"+proxy})
         if response is None or response.status_code != 200:
             raise Exception('Request failed for ' + self.url)
         content = response.text
