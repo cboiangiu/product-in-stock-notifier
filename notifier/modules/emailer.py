@@ -18,7 +18,7 @@ class Emailer:
 
     def send_email(self, recipient, subject, body):
         try:
-            self.server.noop()[0]
+            self.server.noop()
         except:
             self.server.quit()
             self.create_server()
