@@ -3,7 +3,7 @@ import time
 import threading
 from os import getenv, makedirs
 from os.path import join, dirname
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from user_agent import generate_user_agent
 from modules.vpn import connect, reconnect
@@ -31,7 +31,7 @@ emailer = Emailer(emailer_host,emailer_port,emailer_email,emailer_password)
 vpn_huge_fail = False
 vpn_changing_ip = False
 start_time = datetime.now()
-notify_uptime_time = start_time + datetime.timedelta(hours=12)
+notify_uptime_time = start_time + timedelta(hours=12)
 
 def notify_emails(subject, body):
     for email in emails_to_notify:
@@ -93,7 +93,7 @@ class NotifierThread(threading.Thread):
                 logging.info("notifier - " + self.product.get_product() + ":"+ self.product.get_store() + " - Store page changed - " + "Update css in the store class!")
                 break
             if datetime.now() > notify_uptime_time:
-                notify_uptime_time = datetime.now() + datetime.timedelta(hours=12)
+                notify_uptime_time = datetime.now() + timedelta(hours=12)
                 uptime = getDuration(start_time)
                 logging.info("notifier - uptime - All good! Will notify back in 12 hours. Uptime: " + uptime)
                 notify_emails("notifier - uptime","All good! Will notify back in 12 hours. Uptime: " + uptime)
