@@ -9,6 +9,7 @@ from user_agent import generate_user_agent
 from modules.vpn import connect, reconnect
 from modules.emailer import Emailer
 from modules.product_status import Status
+from modules.util import getDuration
 from products import products
 
 makedirs("log", exist_ok=True)
@@ -29,6 +30,8 @@ connect(vpn_country_code)
 emailer = Emailer(emailer_host,emailer_port,emailer_email,emailer_password)
 vpn_huge_fail = False
 vpn_changing_ip = False
+start_time = datetime.now()
+notify_uptime_time = start_time + datetime.timedelta(hours=12)
 
 def notify_emails(subject, body):
     for email in emails_to_notify:
@@ -72,15 +75,28 @@ class NotifierThread(threading.Thread):
         self.product = product
 
    def run(self):
+        global notify_uptime_time
         logging.info("Starting " + self.name + " - " + self.product.get_product())
         while True:
             status = self.product.check(generate_user_agent())
             if status == Status.NOTIFY_STOCK:
-                logging.info("notifier - " + self.product.get_product() + " "+ self.product.get_store() + " - IN STOCK - " + self.product.get_url())
-                notify_emails("notifier - " + self.product.get_product() + " "+ self.product.get_store() + " - IN STOCK",self.product.get_url())
+                logging.info("notifier - " + self.product.get_product() + ":"+ self.product.get_store() + " - IN STOCK - " + self.product.get_url())
+                notify_emails("notifier - " + self.product.get_product() + ":"+ self.product.get_store() + " - IN STOCK",self.product.get_url())
             elif status == Status.FAIL:
                 if change_ip() == 1:
                     break
+            elif status == Status.PAGE_CHANGED_SHOULD_NOTIFY:
+                logging.info("notifier - " + self.product.get_product() + ":"+ self.product.get_store() + " - Store page changed - " + "Update css in the store class!")
+                notify_emails("notifier - " + self.product.get_product() + ":"+ self.product.get_store() + " - Store page changed","Update css in the store class!")
+                break
+            elif status == Status.PAGE_CHANGED:
+                logging.info("notifier - " + self.product.get_product() + ":"+ self.product.get_store() + " - Store page changed - " + "Update css in the store class!")
+                break
+            if datetime.now() > notify_uptime_time:
+                notify_uptime_time = datetime.now() + datetime.timedelta(hours=12)
+                uptime = getDuration(start_time)
+                logging.info("notifier - uptime - All good! Will notify back in 12 hours. Uptime: " + uptime)
+                notify_emails("notifier - uptime","All good! Will notify back in 12 hours. Uptime: " + uptime)
             time.sleep(checking_delay)
         logging.error("Exiting " + self.name + " - " + self.product.get_product())
 

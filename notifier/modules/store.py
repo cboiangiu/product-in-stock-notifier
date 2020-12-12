@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 from modules.product_status import Status
 
 class Store(ABC):
+    should_notify_page_changed = True
+
     def __init__(self, product, store, url):
         self.product = product
         self.store = store
@@ -16,6 +18,11 @@ class Store(ABC):
             if not self.is_page_valid():
                 return Status.FAIL
             in_stock = self.is_in_stock()
+            if in_stock == None and Store.should_notify_page_changed:
+                Store.should_notify_page_changed = False
+                return Status.PAGE_CHANGED_SHOULD_NOTIFY
+            elif in_stock == None:
+                return Status.PAGE_CHANGED
             if in_stock and self.should_notify:
                 self.should_notify = False
                 return Status.NOTIFY_STOCK
