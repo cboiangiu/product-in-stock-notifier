@@ -6,16 +6,34 @@ TODO: Add overview
 
 ## iOS
 
-TODO: Add product_in_stock.shortcut in /ios
+Link: https://www.icloud.com/shortcuts/7b72bfe7be8b4f88b60f6b42e16353da
 
-In the `/ios` directory you will find a Shortcuts file named `product_in_stock.shortcut`.
+~~In the `/ios` directory you will find a Shortcuts file named `product_in_stock.shortcut`.~~
 
-Send that file to your ios device and import the shortcut to your Shortcuts app. During the import you will be asked to answer some questions regarding the shortcut's configuration (product url and product name). After answering the questions the shortcut will be added.
+_Apparently importing shortcut files is not yet supported, so I have shared a link for the shortcut via iCloud. The file is still left in `/ios` if apple eventually fixes this. Also, I have left screenshots of the shortcut actions in `/ios/media` if you want te recreate it yourself._
 
-Next, go to the automations section in the shortcuts app and create a new Personal Automation. For the trigger select Email and configure the Sender as you defined it during the `setup.py` phase. For the subject, the format should be `Example Product Name:Example Store Name - IN STOCK` depending on the name of the product and the store. For the action of the automation select Run Shortcut and select the previously created shortcut.
+__Note__: The first version of the shortcut added an alarm and timer upon receiving the IN STOCK email. Unfortunately apple does not support running automations on email triggers automaticaly (it just sends a notification to run the shortcut). Therefore, this new version of the shortcut only opens the browser with the product link and also copies it to the clipboard.
 
-If you have defined multiple products in the python script, create a shortcut and automation for each one (import shortcut, answer questions, create automation). If creating multiple shortcuts, make sure to rename them after import so that each gets a unique name that can be used then for each automation when selected in Run Shortcut.
+### Instructions
+
+First, make sure to allow Untrusted shortcuts from iPhone Settings app -> Shortcuts.
+
+Click the link above to add the shortcut or recreate it yourself. 
+
+When adding the shortcut, make sure to replace the product and store name in `Notify: Product - Store` in the `When I run:` section. Press `Add Untrusted Shortcut` at the bottom. 
+
+Answer the import questions in the `Configure This Shortcut` section.  
+
+Go to `Automation` tab and create a new `Personal Automation`. For the trigger, select email. For sender, select the address added during `setup.py` in `EMAILER_EMAIL`. For the subject, the format should be `Example Product Name:Example Store Name - IN STOCK` depending on the name of the product and the store. For the recipient, enter the PUSH enabled email added during `setup.py` in `EMAILS_TO_NOTIFY` (you can use your @icloud address if you have it added in you Mail app).
+
+In the action section select `Add Action` and choose `Run Shortcut` and choose the imported/created shortcut.
+
+Press `Next` button in the top right and `Done`.
+
+That's all.
+
+__Note__: If you have defined multiple products in the python script, create a shortcut and automation for each one (import shortcut, answer questions, create automation).
 
 ## Android
 
-Haven't researched how to do a similar thing on Android. Tasker might be a good start, idk.
+Haven't researched how to do a similar thing on Android. Tasker might be a good start, idk. PR's welcome!
